@@ -3,16 +3,27 @@ const app = express();
 
 app.use(express.json()); // permet de lire req.body en JSON
 
-let produits = [
-  { id: 1, nom: "Clavier", prix: 25 },
-  { id: 2, nom: "Souris", prix: 15 },
-  { id: 3, nom: "Ecran", prix: 120 }
+let jeux = [
+  { id: 1, nom: "Valorant", anticheat: "Riot Vanguard" },
+  { id: 2, nom: "Counter Strike 2", anticheat: "VAC" },
+  { id: 3, nom: "Fortnite", anticheat: "EAC" }
 ];
 
-// GET /produits -> renvoie tout le tableau
-app.get("/produits", (req, res) => {
-  res.json(produits);
+// GET /jeux -> renvoie tout le tableau
+app.get("/jeux", (req, res) => {
+  if(req.query.nom){
+    const nom = req.query.nom;
+
+    if (nom) {
+      const resultats = jeux.filter((p) => p.nom === nom);
+      return res.json(resultats);
+    }
+  }else{
+    res.json(jeux);
+  }
 });
+  
+
 
 
 
@@ -27,10 +38,10 @@ app.listen(3000, () => {
 });
 
 
-// GET /produits/2 -> renvoie le produit dont l id vaut 2
-app.get("/produits/:id", (req, res) => {
+// GET /jeux/2 -> renvoie le produit dont l id vaut 2
+app.get("/jeux/:id", (req, res) => {
   const id = Number(req.params.id);            // ":id" arrive en texte -> on convertit
-  const produit = produits.find((p) => p.id === id);
+  const produit = jeux.find((p) => p.id === id);
   if (!produit) {                              // rien trouve
     return res.status(404).json({ erreur: "Produit introuvable" });
   }
@@ -38,29 +49,34 @@ app.get("/produits/:id", (req, res) => {
 });
 
 
-// POST /produits -> ajoute un produit envoye dans le corps de la requete
-app.post("/produits", (req, res) => {
+
+
+
+// POST /jeux -> ajoute un produit envoye dans le corps de la requete
+app.post("/jeux", (req, res) => {
   if (!req.body.nom) {                          // donnee obligatoire manquante
     return res.status(400).json({ erreur: "Le nom est obligatoire" });
   }
   const nouveau = {
-    id: produits.length + 1,
+    id: jeux.length + 1,
     nom: req.body.nom,
-    prix: req.body.prix
+    anticheat: req.body.anticheat
   };
-  produits.push(nouveau);                       // on ajoute au tableau
+  jeux.push(nouveau);                       // on ajoute au tableau
   res.status(201).json(nouveau);                // 201 = cree
 });
 
 
 
-// DELETE /produits/2 -> supprime le produit n 2
-app.delete("/produits/:id", (req, res) => {
+// DELETE /jeux/2 -> supprime le produit n 2
+app.delete("/jeux/:id", (req, res) => {
   const id = Number(req.params.id);
-  const index = produits.findIndex((p) => p.id === id);
+  const index = jeux.findIndex((p) => p.id === id);
   if (index === -1) {                           // -1 = pas trouve
     return res.status(404).json({ erreur: "Produit introuvable" });
   }
-  produits.splice(index, 1);                    // retire 1 element a cette position
+  jeux.splice(index, 1);                    // retire 1 element a cette position
   res.status(200).json({ message: "Produit supprime" });
 });
+
+
