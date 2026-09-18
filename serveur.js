@@ -51,3 +51,16 @@ app.post("/produits", (req, res) => {
   produits.push(nouveau);                       // on ajoute au tableau
   res.status(201).json(nouveau);                // 201 = cree
 });
+
+
+
+// DELETE /produits/2 -> supprime le produit n 2
+app.delete("/produits/:id", (req, res) => {
+  const id = Number(req.params.id);
+  const index = produits.findIndex((p) => p.id === id);
+  if (index === -1) {                           // -1 = pas trouve
+    return res.status(404).json({ erreur: "Produit introuvable" });
+  }
+  produits.splice(index, 1);                    // retire 1 element a cette position
+  res.status(200).json({ message: "Produit supprime" });
+});
